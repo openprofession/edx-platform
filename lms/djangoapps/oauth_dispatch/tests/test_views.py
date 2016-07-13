@@ -377,7 +377,7 @@ class TestRevokeTokenView(_DispatchingViewTestCase):  # pylint: disable=abstract
             HTTP_AUTHORIZATION="Bearer {0}".format(self.access_token)
         )
 
-    def _assert_access_token_validated(self):
+    def _assert_access_token_is_valid(self):
         """
         Asserts that oauth assigned access_token is valid and usable
         """
@@ -403,7 +403,7 @@ class TestRevokeTokenView(_DispatchingViewTestCase):  # pylint: disable=abstract
         """
         Verifies access of token before and after revoking
         """
-        self._assert_access_token_validated()
+        self._assert_access_token_is_valid()
 
         response = self.client.post(self.revoke_token_url, self.revoke_token_post_body(token))
         self.assertEqual(response.status_code, 200)
