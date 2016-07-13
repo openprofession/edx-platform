@@ -6,9 +6,10 @@
             'jquery',
             'backbone',
             'discussion/js/discussion_router',
+            'discussion/js/views/discussion_fake_breadcrumbs',
             'common/js/discussion/views/new_post_view'
         ],
-        function($, Backbone, DiscussionRouter, NewPostView) {
+        function($, Backbone, DiscussionRouter, DiscussionFakeBreadcrumbs, NewPostView) {
             return function(options) {
                 var userInfo = options.user_info,
                     sortPreference = options.sort_preference,
@@ -19,7 +20,10 @@
                     discussion,
                     courseSettings,
                     newPostView,
-                    router;
+                    router,
+                    breadcrumbs,
+                    baseCrumb = {url: '', title: 'All Topics'};
+
                 // TODO: Perhaps eliminate usage of global variables when possible
                 window.DiscussionUtil.loadRoles(options.roles);
                 window.$$course_id = options.courseId;
@@ -27,6 +31,7 @@
                 window.DiscussionUtil.setUser(user);
                 window.user = user;
                 window.Content.loadContentInfos(contentInfo);
+
                 discussion = new window.Discussion(threads, {pages: threadPages, sort: sortPreference});
                 courseSettings = new window.DiscussionCourseSettings(options.course_settings);
 
@@ -47,6 +52,26 @@
                     newPostView: newPostView
                 });
                 router.start();
+
+                breadcrumbs = new DiscussionFakeBreadcrumbs({
+                    el: $('.has-breadcrumbs'),
+                    model: Backbone.Model.extend({
+                        defaults: {
+                            contents: null,
+                        }
+                    }),
+                    events: {
+                        'click .all-topics': function(event) {
+                            event.preventDefault();
+                            this.model.set('contents', null)
+                        }
+                    }
+                }).render();
+
+                // Add new breadcrumbs when the user selects topics
+                router.nav.on('topic:selected', function(topic) {
+                    breadcrumbs.model.set('crumbs', topic);
+                });
             };
         });
 }).call(this, define || RequireJS.define);

@@ -58,6 +58,7 @@
 
                 allThreads: function() {
                     this.nav.updateSidebar();
+                    this.nav.selectTopic($('.forum-nav-browse-menu-all'));
                     return this.nav.goHome();
                 },
 

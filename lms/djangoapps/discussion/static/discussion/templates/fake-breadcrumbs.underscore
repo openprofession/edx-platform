@@ -1,0 +1,6 @@
+<h3>
+  <a class="all-topics" href="">All Topics</a>
+  <% if(contents) { %>
+    <span><%- contents %></span>
+  <% } %>
+</h3>
