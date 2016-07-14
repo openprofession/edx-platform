@@ -5,7 +5,7 @@ import logging
 from django.conf import settings
 
 from opaque_keys.edx.keys import CourseKey
-from util.url import strip_scheme
+import re
 
 log = logging.getLogger(__name__)
 
@@ -23,8 +23,8 @@ def get_lms_link_for_about_page(course_key):
     else:
         about_base = settings.ENV_TOKENS.get('LMS_BASE')
 
-    # replaces marketing url scheme with 'https' to follow lms/cms
-    about_base = strip_scheme(about_base)
+    # Strip off https:// (or http://) to be consistent with the formatting of LMS_BASE.
+    about_base = re.sub(r"^https?://", "", about_base)
     return u"https://{about_base_url}/courses/{course_key}/about".format(
         about_base_url=about_base,
         course_key=course_key.to_deprecated_string()
