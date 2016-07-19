@@ -589,4 +589,5 @@ COMPREHENSIVE_THEME_DIRS = [REPO_ROOT / "themes", REPO_ROOT / "common/test"]
 
 ENV_TOKENS = {
     'LMS_BASE': 'localhost:8000',
+    'LMS_ROOT_URL': 'http://localhost:8000'
 }
