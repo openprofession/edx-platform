@@ -99,6 +99,7 @@ class DarkLangView(View):
             request (Request): The incoming Django Request
 
         Returns:
+            bool: True for successful setting of the language code
             str: The response message to be presented
         """
         if LANGUAGE_INPUT_FIELD not in request.POST:
@@ -129,6 +130,7 @@ class DarkLangView(View):
             request (Request): The incoming Django Request
 
         Returns:
+            bool: True for successful clearing of the language code
             str: The response message to be presented
         """
         auth_user = request.user.is_authenticated()
