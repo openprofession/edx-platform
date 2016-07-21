@@ -33,6 +33,27 @@ CHINESE_LANGUAGE_CODE_MAP = {
 }
 
 
+def _dark_parse_accept_lang_header(accept):
+    """
+    The use of 'zh-cn' for 'Simplified Chinese' and 'zh-tw' for 'Traditional Chinese'
+    are now deprecated, as discussed here: https://code.djangoproject.com/ticket/18419.
+    The new language codes 'zh-hans' and 'zh-hant' are now used since django 1.7.
+    Although majority of browsers still use the old language codes, some new browsers
+    such as IE11 in Windows 8.1 start to use the new ones, which makes the current
+    chinese translations of edX don't work properly under these browsers.
+    This function can keep compatibility between the old and new language codes. If one
+    day edX uses django 1.7 or higher, this function can be modified to support the old
+    language codes until there are no browsers use them.
+    """
+    browser_langs = parse_accept_lang_header(accept)
+    django_langs = []
+    for lang, priority in browser_langs:
+        lang = CHINESE_LANGUAGE_CODE_MAP.get(lang.lower(), lang)
+        django_langs.append((lang, priority))
+
+    return django_langs
+
+
 class DarkLangMiddleware(object):
     """
     Middleware for dark-launching languages.
@@ -72,32 +93,6 @@ class DarkLangMiddleware(object):
                 return released_lang
         return None
 
-    def _dark_parse_accept_lang_header(self, accept):
-        """
-        The use of 'zh-cn' for 'Simplified Chinese' and 'zh-tw' for 'Traditional Chinese'
-        are now deprecated, as discussed here: https://code.djangoproject.com/ticket/18419.
-        The new language codes 'zh-hans' and 'zh-hant' are now used since django 1.7.
-        Although majority of browsers still use the old language codes, some new browsers
-        such as IE11 in Windows 8.1 start to use the new ones, which makes the current
-        chinese translations of edX don't work properly under these browsers.
-        This function can keep compatibility between the old and new language codes. If one
-        day edX uses django 1.7 or higher, this function can be modified to support the old
-        language codes until there are no browsers use them.
-        """
-        browser_langs = parse_accept_lang_header(accept)
-        django_langs = []
-        for lang, priority in browser_langs:
-            lang = CHINESE_LANGUAGE_CODE_MAP.get(lang.lower(), lang)
-            django_langs.append((lang, priority))
-
-        return django_langs
-
-    def _format_accept_value(self, lang, priority=1.0):
-        """
-        Formats lang and priority into a valid accept header fragment.
-        """
-        return "{};q={}".format(lang, priority)
-
     def _clean_accept_headers(self, request):
         """
         Remove any language that is not either in ``self.released_langs`` or
@@ -108,7 +103,7 @@ class DarkLangMiddleware(object):
             return
 
         new_accept = []
-        for lang, priority in self._dark_parse_accept_lang_header(accept):
+        for lang, priority in _dark_parse_accept_lang_header(accept):
             fuzzy_code = self._fuzzy_match(lang.lower())
             if fuzzy_code:
                 # Formats lang and priority into a valid accept header fragment.

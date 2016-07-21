@@ -68,9 +68,10 @@ class DarkLangView(View):
             'disable_courseware_js': True,
             'uses_pattern_library': True
         }
-        result = self.process_darklang_request(request)
+        (success, result) = self.process_darklang_request(request)
         if result is not None:
             context.update({'form_submit_message': result})
+            context.update({'success': success})
         return render_to_response(self.template_name, context)
 
     def process_darklang_request(self, request):
@@ -78,14 +79,17 @@ class DarkLangView(View):
         Prevent user from requesting un-released languages
         """
         if not DarkLangConfig.current().enabled:
-            return None
+            return False, _('Preview Language is currently disabled')
 
+        success = False
+        result = None
         if 'reset' in request.POST:
             # Reset and clear the language preference
-            return self._clear_preview_language(request)
+            (success, result) = self._clear_preview_language(request)
         if 'set_language' in request.POST:
             # Set the Preview Language
-            return self._set_preview_language(request)
+            (success, result) = self._set_preview_language(request)
+        return success, result
 
     def _set_preview_language(self, request):
         """
@@ -98,12 +102,12 @@ class DarkLangView(View):
             str: The response message to be presented
         """
         if LANGUAGE_INPUT_FIELD not in request.POST:
-            return _('Language code not provided')
+            return False, _('Language code not provided')
 
         preview_lang = request.POST[LANGUAGE_INPUT_FIELD]
 
         if preview_lang == '':
-            return _('Language code not provided')
+            return False, _('Language code not provided')
 
         auth_user = request.user.is_authenticated()
 
@@ -114,7 +118,8 @@ class DarkLangView(View):
         # user, so that the lang_pref middleware doesn't clobber away the dark lang preview.
         if auth_user:
             set_user_preference(request.user, DARK_LANGUAGE_KEY, preview_lang)
-        return _('Language set to language code: {}').format(preview_lang)
+        return True, _('Language set to language code: {preview_language_code}').format(
+            preview_language_code=preview_lang)
 
     def _clear_preview_language(self, request):
         """
@@ -141,5 +146,6 @@ class DarkLangView(View):
             if user_pref:
                 request.session[LANGUAGE_SESSION_KEY] = user_pref
         if user_pref is None:
-            return _('Language reset user default')
-        return _('Language reset to default language code: {}').format(user_pref)
+            return True, _('Language reset to the user\'s default language code')
+        return True, _('Language reset to default language code: {preview_language_code}').format(
+            preview_language_code=user_pref)
