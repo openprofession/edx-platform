@@ -149,5 +149,5 @@ class DarkLangView(View):
                 request.session[LANGUAGE_SESSION_KEY] = user_pref
         if user_pref is None:
             return True, _('Language reset to the default language code')
-        return True, _('Language reset to user\'s preference: {preview_language_code}').format(
+        return True, _("Language reset to user's preference: {preview_language_code}").format(
             preview_language_code=user_pref)
