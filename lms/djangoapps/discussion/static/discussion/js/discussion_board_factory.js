@@ -22,6 +22,7 @@
                     newPostView,
                     router,
                     breadcrumbs,
+                    BreadcrumbsModel,
                     baseCrumb = {url: '', title: 'All Topics'};
 
                 // TODO: Perhaps eliminate usage of global variables when possible
@@ -53,24 +54,28 @@
                 });
                 router.start();
 
+                BreadcrumbsModel = Backbone.Model.extend({
+                    defaults: {
+                        contents: [],
+                    }
+                });
+
                 breadcrumbs = new DiscussionFakeBreadcrumbs({
                     el: $('.has-breadcrumbs'),
-                    model: Backbone.Model.extend({
-                        defaults: {
-                            contents: null,
-                        }
-                    }),
+                    model: new BreadcrumbsModel(),
                     events: {
                         'click .all-topics': function(event) {
                             event.preventDefault();
-                            this.model.set('contents', null)
+                            this.model.set('contents', []);
+                            router.navigate('', {trigger: true})
+                            router.nav.selectTopic($('.forum-nav-browse-menu-all'));
                         }
                     }
                 }).render();
 
                 // Add new breadcrumbs when the user selects topics
                 router.nav.on('topic:selected', function(topic) {
-                    breadcrumbs.model.set('crumbs', topic);
+                    breadcrumbs.model.set('contents', topic);
                 });
             };
         });

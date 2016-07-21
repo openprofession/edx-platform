@@ -480,7 +480,19 @@
             };
 
             DiscussionThreadListView.prototype.getBreadcrumbText = function($item) {
-                return $('.forum-nav-browse-title', $item).first().text().trim();
+                var subTopic = $('.forum-nav-browse-title', $item).first().text().trim(),
+                    $parentSubMenus = $item.parents('.forum-nav-browse-submenu'),
+                    crumbs = [];
+
+                $parentSubMenus.each(function(i, el) {
+                    crumbs.push($(el).siblings('.forum-nav-browse-title').first().text().trim());
+                });
+
+                if (subTopic !== 'All Discussions') {
+                    crumbs.push(subTopic);
+                }
+
+                return crumbs;
             };
 
             DiscussionThreadListView.prototype.filterTopics = function(event) {

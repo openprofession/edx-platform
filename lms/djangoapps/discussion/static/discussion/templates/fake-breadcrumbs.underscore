@@ -1,6 +1,9 @@
-<h3>
-  <a class="all-topics" href="">All Topics</a>
-  <% if(contents) { %>
-    <span><%- contents %></span>
-  <% } %>
-</h3>
+<h2 class="hd-4">
+  <span class="crumb">
+    <a class="all-topics" href="">All Topics</a>
+  </span>
+  <% contents.forEach(function(content) { %>
+    <span class="fa fa-chevron-right"></span>
+    <span class="crumb"><%- content %></span>
+  <% }); %>
+</h2>
