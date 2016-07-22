@@ -27,9 +27,6 @@ class DarkLangView(View):
     Expected Behavior:
     GET - returns a form for setting/resetting the user's dark language
     POST - updates or clears the setting to the given dark language
-
-    Note: This class and View are meant to replace the ability to set the DarkLang in the middleware, which was
-    determined to be a security risk. (TNL-4742)
     """
     template_name = 'darklang/preview_lang.html'
 
@@ -59,7 +56,8 @@ class DarkLangView(View):
             request (Request): The Django Request Object
 
         Returns:
-            HttpResponse: View containing the form for setting the preview lang
+            HttpResponse: View containing the form for setting the preview lang with the status
+                included in the context
         """
         return self.process_darklang_request(request)
 
@@ -92,7 +90,8 @@ class DarkLangView(View):
             context dict: The basic context for the Response
 
         Returns:
-            HttpResponse: View containing the form for setting the preview lang and the resulting message
+            HttpResponse: View containing the form for setting the preview lang with the status
+                included in the context
         """
         message = None
         show_refresh_message = False
@@ -131,10 +130,9 @@ class DarkLangView(View):
         Arguments:
             request (Request): The incoming Django Request
             context dict: The basic context for the Response
-
-
         Returns:
-            HttpResponse: View containing the form for setting the preview lang and the resulting message
+            HttpResponse: View containing the form for setting the preview lang with the status
+                included in the context
         """
         # delete the session language key (if one is set)
         if LANGUAGE_SESSION_KEY in request.session:
