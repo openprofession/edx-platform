@@ -1,23 +1,20 @@
 """
 Views file for the Darklang Django App
 """
-from openedx.core.lib.api.view_utils import view_auth_classes
-from django.views.generic.base import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
-from edxmako.shortcuts import render_to_response
-
+from django.utils.translation import LANGUAGE_SESSION_KEY
+from django.utils.translation import ugettext as _
+from django.views.generic.base import View
 from openedx.core.djangoapps.user_api.preferences.api import (
     delete_user_preference, get_user_preference, set_user_preference
 )
-from lang_pref import LANGUAGE_KEY
-
-from django.utils.translation import LANGUAGE_SESSION_KEY
-from django.utils.translation import ugettext as _
+from openedx.core.lib.api.view_utils import view_auth_classes
 
 from dark_lang import DARK_LANGUAGE_KEY
 from dark_lang.models import DarkLangConfig
+from edxmako.shortcuts import render_to_response
+from lang_pref import LANGUAGE_KEY
 
 LANGUAGE_INPUT_FIELD = 'preview_lang'
 
@@ -64,6 +61,9 @@ class DarkLangView(View):
         Returns:
             HttpResponse: View containing the form for setting the preview lang
         """
+        return self.process_darklang_request(request)
+
+    def process_darklang_request(self, request):
         context = {
             'disable_courseware_js': True,
             'uses_pattern_library': True
@@ -73,7 +73,7 @@ class DarkLangView(View):
             message = _('Preview Language is currently disabled')
             context.update({'form_submit_message': message})
             context.update({'success': False})
-            response = render_to_response(self.template_name, context)
+            response = render_to_response(self.template_name, context, request=request)
 
         elif 'set_language' in request.POST:
             # Set the Preview Language
@@ -121,7 +121,8 @@ class DarkLangView(View):
 
         context.update({'form_submit_message': message})
         context.update({'success': show_refresh_message})
-        return render_to_response(self.template_name, context)
+        response = render_to_response(self.template_name, context, request=request)
+        return response
 
     def _clear_preview_language(self, request, context):
         """
@@ -152,7 +153,8 @@ class DarkLangView(View):
             message = _('Language reset to the default language code')
         else:
             message = _("Language reset to user's preference: {preview_language_code}").format(
-                preview_language_code=user_pref)
+                preview_language_code=user_pref
+            )
         context.update({'form_submit_message': message})
         context.update({'success': True})
-        return render_to_response(self.template_name, context)
+        return render_to_response(self.template_name, context, request=request)

@@ -20,9 +20,9 @@ class BaseI18nTestCase(TestCase):
     """
     Base utilities for i18n test classes to derive from
     """
-    def __init__(self, *args, **kwargs):
-        super(BaseI18nTestCase, self).__init__(*args, **kwargs)
-        self.user = User()
+    def setUp(self):
+        super(BaseI18nTestCase, self).setUp()
+        self.addCleanup(translation.deactivate)
         self.client = Client()
         # Url and site lang vars for tests to use
         self.url = reverse('dashboard')
@@ -30,10 +30,6 @@ class BaseI18nTestCase(TestCase):
         self.preview_language_url = '/update_lang/'
         self.email = 'test@edx.org'
         self.pwd = 'test_password'
-
-    def setUp(self):
-        super(BaseI18nTestCase, self).setUp()
-        self.addCleanup(translation.deactivate)
         self.create_user()
 
     def assert_tag_has_attr(self, content, tag, attname, value):
@@ -63,29 +59,19 @@ class BaseI18nTestCase(TestCase):
         """
         # Create one user and save it to the database
 
-        self.user = UserFactory.build(username='test', email=self.email)
-        self.user.set_password(self.pwd)
+        self.user = UserFactory.build(username='test', email=self.email, password=self.pwd)
         self.user.save()
-
-        # Create a registration for the user
-        RegistrationFactory(user=self.user)
-
-        # Create a profile for the user
-        UserProfileFactory(user=self.user)
 
     def user_login(self):
         """
         Log the user in
         """
-        # Create the test client
-        self.client = Client()
-
         # Get the login url & log in our user
         try:
             login_url = reverse('login_post')
         except NoReverseMatch:
             login_url = reverse('login')
-        self.client.post(login_url, {'email': self.email, 'password': self.pwd})
+        self.client.login(username=self.user.username, password=self.pwd)
 
 
 @attr('shard_1')
