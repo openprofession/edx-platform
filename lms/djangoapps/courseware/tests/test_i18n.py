@@ -20,16 +20,17 @@ class BaseI18nTestCase(TestCase):
     """
     Base utilities for i18n test classes to derive from
     """
+    preview_language_url = '/update_lang/'
+    email = 'test@edx.org'
+    pwd = 'test_password'
+    url = reverse('dashboard')
+    site_lang = settings.LANGUAGE_CODE
+
     def setUp(self):
         super(BaseI18nTestCase, self).setUp()
         self.addCleanup(translation.deactivate)
         self.client = Client()
         # Url and site lang vars for tests to use
-        self.url = reverse('dashboard')
-        self.site_lang = settings.LANGUAGE_CODE
-        self.preview_language_url = '/update_lang/'
-        self.email = 'test@edx.org'
-        self.pwd = 'test_password'
         self.create_user()
 
     def assert_tag_has_attr(self, content, tag, attname, value):

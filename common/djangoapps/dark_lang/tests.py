@@ -1,20 +1,18 @@
 """
 Tests of DarkLangMiddleware
 """
-from django.contrib.auth.models import User
-from django.http import HttpRequest
-
-import ddt
-from django.test import TestCase
-from mock import Mock
 import unittest
 
-from dark_lang.middleware import DarkLangMiddleware
-from dark_lang.views import DarkLangView
-from dark_lang.models import DarkLangConfig
+import ddt
+from django.contrib.auth.models import User
+from django.http import HttpRequest
+from django.test import TestCase
 from django.utils.translation import LANGUAGE_SESSION_KEY
-from student.tests.factories import UserFactory
+from mock import Mock
 
+from dark_lang.middleware import DarkLangMiddleware
+from dark_lang.models import DarkLangConfig
+from dark_lang.views import DarkLangView
 
 UNSET = object()
 
@@ -72,7 +70,7 @@ class DarkLangMiddlewareTests(TestCase):
             session=session,
             META=meta,
             POST=post,
-            user=UserFactory()
+            user=self.user
         )
 
         # Process the incoming request to set the Language
@@ -103,7 +101,7 @@ class DarkLangMiddlewareTests(TestCase):
             session=session,
             META=meta,
             GET={},
-            user=UserFactory()
+            user=self.user
         )
 
         # Process it through the Middleware to ensure the language is available as expected.
