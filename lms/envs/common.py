@@ -358,9 +358,6 @@ FEATURES = {
     # lives in the Extended table, saving the frontend from
     # making multiple queries.
     'ENABLE_READING_FROM_MULTIPLE_HISTORY_TABLES': True,
-
-    # WIP -- will be removed in Ticket #TNL-4750.
-    'ENABLE_TIME_ZONE_PREFERENCE': False,
 }
 
 # Ignore static asset files on import which match this pattern
@@ -1890,6 +1887,7 @@ INSTALLED_APPS = (
     'openedx.core.djangoapps.course_groups',
     'bulk_email',
     'branding',
+    'grades',
 
     # Student support tools
     'support',
@@ -2900,10 +2898,6 @@ APP_UPGRADE_CACHE_TIMEOUT = 3600
 # records before you have deployed the app to write to coursewarehistoryextended.StudentModuleHistoryExtended
 # if you want to avoid an overlap in ids while searching for history across the two tables.
 STUDENTMODULEHISTORYEXTENDED_OFFSET = 10000
-
-# Deprecated xblock types
-DEPRECATED_ADVANCED_COMPONENT_TYPES = []
-
 
 # Cutoff date for granting audit certificates
 
