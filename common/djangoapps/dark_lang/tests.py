@@ -43,7 +43,7 @@ class DarkLangMiddlewareTests(TestCase):
             enabled=True
         ).save()
 
-    def process_post(self, language_session_key=UNSET, accept=UNSET, preview_lang=UNSET, clear_lang=UNSET):
+    def process_darklang_post_request(self, language_session_key=UNSET, accept=UNSET, preview_lang=UNSET, clear_lang=UNSET):
         """
         Build the POST request and set the language settings according to parameters
 
@@ -281,45 +281,45 @@ class DarkLangMiddlewareTests(TestCase):
 
     def test_preview_lang_with_released_language(self):
         # Preview lang should always override selection.
-        post_request = self.process_post(preview_lang='rel')
+        post_request = self.process_darklang_post_request(preview_lang='rel')
         self.assertSessionLangEquals(
             'rel',
             self.process_middleware_request(post_request=post_request)
         )
 
-        post_request = self.process_post(preview_lang='rel', language_session_key='notrel')
+        post_request = self.process_darklang_post_request(preview_lang='rel', language_session_key='notrel')
         self.assertSessionLangEquals(
             'rel',
             self.process_middleware_request(post_request=post_request)
         )
 
     def test_preview_lang_with_dark_language(self):
-        post_request = self.process_post(preview_lang='unrel')
+        post_request = self.process_darklang_post_request(preview_lang='unrel')
         self.assertSessionLangEquals(
             'unrel',
             self.process_middleware_request(post_request=post_request)
         )
 
-        post_request = self.process_post(preview_lang='unrel')
+        post_request = self.process_darklang_post_request(preview_lang='unrel')
         self.assertSessionLangEquals(
             'unrel',
             self.process_middleware_request(language_session_key='notrel', post_request=post_request)
         )
 
     def test_clear_lang(self):
-        post_request = self.process_post(clear_lang=True)
+        post_request = self.process_darklang_post_request(clear_lang=True)
         self.assertSessionLangEquals(
             UNSET,
             self.process_middleware_request(post_request=post_request)
         )
 
-        post_request = self.process_post(language_session_key='rel', clear_lang=True)
+        post_request = self.process_darklang_post_request(language_session_key='rel', clear_lang=True)
         self.assertSessionLangEquals(
             UNSET,
             self.process_middleware_request(post_request=post_request)
         )
 
-        post_request = self.process_post(language_session_key='unrel', clear_lang=True)
+        post_request = self.process_darklang_post_request(language_session_key='unrel', clear_lang=True)
         self.assertSessionLangEquals(
             UNSET,
             self.process_middleware_request(post_request=post_request)
@@ -333,19 +333,19 @@ class DarkLangMiddlewareTests(TestCase):
             self.process_middleware_request(accept='notrel;q=0.3, rel;q=1.0, unrel;q=0.5')
         )
 
-        post_request = self.process_post(language_session_key='rel', clear_lang=True)
+        post_request = self.process_darklang_post_request(language_session_key='rel', clear_lang=True)
         self.assertSessionLangEquals(
             'rel',
             self.process_middleware_request(post_request=post_request)
         )
 
-        post_request = self.process_post(language_session_key='unrel', clear_lang=True)
+        post_request = self.process_darklang_post_request(language_session_key='unrel', clear_lang=True)
         self.assertSessionLangEquals(
             'unrel',
             self.process_middleware_request(post_request=post_request)
         )
 
-        post_request = self.process_post(language_session_key='rel', preview_lang='unrel')
+        post_request = self.process_darklang_post_request(language_session_key='rel', preview_lang='unrel')
         self.assertSessionLangEquals(
             'rel',
             self.process_middleware_request(post_request=post_request)
