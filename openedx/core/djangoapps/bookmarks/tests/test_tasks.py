@@ -3,6 +3,9 @@ Tests for tasks.
 """
 import ddt
 from nose.plugins.attrib import attr
+from unittest import skipUnless
+
+from django.conf import settings
 
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.tests.factories import check_mongo_calls, ItemFactory
@@ -142,10 +145,11 @@ class XBlockCacheTaskTests(BookmarksTestsBase):
                     )
 
     @ddt.data(
-        ('course', 47),
-        ('other_course', 34)
+        ('course', 48),
+        ('other_course', 35)
     )
     @ddt.unpack
+    @skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Different query counts in CMS')
     def test_update_xblocks_cache(self, course_attr, expected_sql_queries):
         """
         Test that the xblocks data is persisted correctly.
