@@ -8,14 +8,14 @@ This middleware must be placed before the LocaleMiddleware, but after
 the SessionMiddleware.
 """
 from django.conf import settings
-
-from dark_lang import DARK_LANGUAGE_KEY
-from dark_lang.models import DarkLangConfig
+from django.utils.translation import LANGUAGE_SESSION_KEY
+from django.utils.translation.trans_real import parse_accept_lang_header
 from openedx.core.djangoapps.user_api.preferences.api import (
     get_user_preference
 )
-from django.utils.translation.trans_real import parse_accept_lang_header
-from django.utils.translation import LANGUAGE_SESSION_KEY
+
+from dark_lang import DARK_LANGUAGE_KEY
+from dark_lang.models import DarkLangConfig
 
 # If django 1.7 or higher is used, the right-side can be updated with new-style codes.
 CHINESE_LANGUAGE_CODE_MAP = {
@@ -83,15 +83,16 @@ class DarkLangMiddleware(object):
 
     def _fuzzy_match(self, lang_code):
         """Returns a fuzzy match for lang_code"""
+        match = None
         if lang_code in self.released_langs:
-            return lang_code
+            match = lang_code
 
         lang_prefix = lang_code.partition('-')[0]
         for released_lang in self.released_langs:
             released_prefix = released_lang.partition('-')[0]
             if lang_prefix == released_prefix:
-                return released_lang
-        return None
+                match = released_lang
+        return match
 
     def _clean_accept_headers(self, request):
         """
@@ -115,7 +116,7 @@ class DarkLangMiddleware(object):
 
     def _activate_preview_language(self, request):
         """
-        Check the user's dark language setting in the sessiona and apply it
+        Check the user's dark language setting in the session and apply it
         """
         auth_user = request.user.is_authenticated()
         preview_lang = None
@@ -123,9 +124,9 @@ class DarkLangMiddleware(object):
             # Get the request user's dark lang preference
             preview_lang = get_user_preference(request.user, DARK_LANGUAGE_KEY)
 
-        # User doesn't have a dark lang preference, so just return
-        if not preview_lang:
-            return
+        # User has a dark lang preference, store it in the session
+        if preview_lang:
+            # Set the session key to the requested preview lang
+            request.session[LANGUAGE_SESSION_KEY] = preview_lang
 
-        # Set the session key to the requested preview lang
-        request.session[LANGUAGE_SESSION_KEY] = preview_lang
+

@@ -2,18 +2,17 @@
 Tests i18n in courseware
 """
 import re
-from nose.plugins.attrib import attr
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import translation
+from nose.plugins.attrib import attr
+from openedx.core.djangoapps.user_api.preferences.api import set_user_preference
 
 from dark_lang.models import DarkLangConfig
 from lang_pref import LANGUAGE_KEY
-from openedx.core.djangoapps.user_api.preferences.api import set_user_preference
 from student.tests.factories import UserFactory, RegistrationFactory, UserProfileFactory
 
 
