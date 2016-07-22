@@ -21,16 +21,14 @@ class BaseI18nTestCase(TestCase):
     Base utilities for i18n test classes to derive from
     """
     preview_language_url = '/update_lang/'
-    email = 'test@edx.org'
-    pwd = 'test_password'
     url = reverse('dashboard')
     site_lang = settings.LANGUAGE_CODE
+    pwd = 'test_password'
 
     def setUp(self):
         super(BaseI18nTestCase, self).setUp()
         self.addCleanup(translation.deactivate)
         self.client = Client()
-        # Url and site lang vars for tests to use
         self.create_user()
 
     def assert_tag_has_attr(self, content, tag, attname, value):
@@ -59,8 +57,8 @@ class BaseI18nTestCase(TestCase):
         Creates the user log in
         """
         # Create one user and save it to the database
-
-        self.user = UserFactory.build(username='test', email=self.email, password=self.pwd)
+        email = 'test@edx.org'
+        self.user = UserFactory.build(username='test', email=email, password=self.pwd)
         self.user.save()
 
     def user_login(self):
@@ -110,10 +108,6 @@ class I18nRegressionTests(BaseI18nTestCase):
     """
     Tests for i18n
     """
-
-    def setUp(self):
-        super(I18nRegressionTests, self).setUp()
-
     def test_es419_acceptance(self):
         # Regression test; LOC-72, and an issue with Django
         self.release_languages('es-419')
