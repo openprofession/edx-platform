@@ -41,7 +41,8 @@ class DarkLangMiddlewareTests(TestCase):
             enabled=True
         ).save()
 
-    def process_darklang_post_request(self, language_session_key=UNSET, accept=UNSET, preview_lang=UNSET, clear_lang=UNSET):
+    def process_darklang_post_request(self, language_session_key=UNSET, accept=UNSET, preview_lang=UNSET,
+                                      clear_lang=None):
         """
         Build the POST request and set the language settings according to parameters
 
@@ -60,9 +61,11 @@ class DarkLangMiddlewareTests(TestCase):
         post = {}
         set_if_set(post, 'preview_lang', preview_lang)
 
-        if clear_lang is True:
+        if clear_lang is not None and clear_lang is True:
+            # reset is tha name used when a reset is sent within POST
             set_if_set(post, 'reset', 'reset')
         else:
+            # set_language is tha name used when a submit is sent within POST
             set_if_set(post, 'set_language', 'set_language')
 
         request = Mock(
@@ -302,6 +305,14 @@ class DarkLangMiddlewareTests(TestCase):
         self.assertSessionLangEquals(
             'unrel',
             self.process_middleware_request(language_session_key='notrel', post_request=post_request)
+        )
+
+        # When posting an empty preview_language the currently set language should not change
+        self.process_darklang_post_request(clear_lang=True)
+        post_request = self.process_darklang_post_request(preview_lang='')
+        self.assertSessionLangEquals(
+            UNSET,
+            self.process_middleware_request(post_request=post_request)
         )
 
     def test_clear_lang(self):

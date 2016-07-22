@@ -4,7 +4,7 @@ Tests i18n in courseware
 import re
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import translation
@@ -13,7 +13,7 @@ from openedx.core.djangoapps.user_api.preferences.api import set_user_preference
 
 from dark_lang.models import DarkLangConfig
 from lang_pref import LANGUAGE_KEY
-from student.tests.factories import UserFactory, RegistrationFactory, UserProfileFactory
+from student.tests.factories import UserFactory
 
 
 class BaseI18nTestCase(TestCase):
@@ -68,10 +68,6 @@ class BaseI18nTestCase(TestCase):
         Log the user in
         """
         # Get the login url & log in our user
-        try:
-            login_url = reverse('login_post')
-        except NoReverseMatch:
-            login_url = reverse('login')
         self.client.login(username=self.user.username, password=self.pwd)
 
 

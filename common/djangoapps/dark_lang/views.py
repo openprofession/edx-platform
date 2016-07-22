@@ -62,6 +62,16 @@ class DarkLangView(View):
         return self.process_darklang_request(request)
 
     def process_darklang_request(self, request):
+        """
+        Proccess the request to Set or clear the DarkLang depending on the incoming request.
+
+        Arguments:
+            request (Request): The Django Request Object
+
+        Returns:
+            HttpResponse: View containing the form for setting the preview lang with the status
+                included in the context
+        """
         context = {
             'disable_courseware_js': True,
             'uses_pattern_library': True
@@ -102,17 +112,16 @@ class DarkLangView(View):
 
         if preview_lang == '':
             message = _('Language code not provided')
-
-        # Set the session key to the requested preview lang
-        request.session[LANGUAGE_SESSION_KEY] = preview_lang
-
-        # Make sure that we set the requested preview lang as the dark lang preference for the
-        # user, so that the lang_pref middleware doesn't clobber away the dark lang preview.
-        auth_user = request.user
-        if auth_user and message is None:
-            set_user_preference(request.user, DARK_LANGUAGE_KEY, preview_lang)
-
         if message is None:
+            # Set the session key to the requested preview lang
+            request.session[LANGUAGE_SESSION_KEY] = preview_lang
+
+            # Make sure that we set the requested preview lang as the dark lang preference for the
+            # user, so that the lang_pref middleware doesn't clobber away the dark lang preview.
+            auth_user = request.user
+            if auth_user and message is None:
+                set_user_preference(request.user, DARK_LANGUAGE_KEY, preview_lang)
+
             message = _('Language set to language code: {preview_language_code}').format(
                 preview_language_code=preview_lang
             )
