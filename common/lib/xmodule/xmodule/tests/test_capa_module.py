@@ -1022,9 +1022,6 @@ class CapaModuleTest(unittest.TestCase):
         module = CapaFactory.create(attempts=1, max_attempts=10)
         self.assertEqual(module.check_button_checking_name(), "Checking...")
 
-        module = CapaFactory.create(attempts=10, max_attempts=10)
-        self.assertEqual(module.check_button_checking_name(), "Checking...")
-
     def test_should_show_check_button(self):
 
         attempts = random.randint(1, 10)
