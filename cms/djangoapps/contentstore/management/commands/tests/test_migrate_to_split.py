@@ -122,4 +122,3 @@ class TestMigrateToSplit(ModuleStoreTestCase):
         split_locator = split_store.make_course_key(self.course.id.org, self.course.id.course, self.course.id.run)
         with self.assertRaises(ItemNotFoundError):
             mongo_store.get_course(split_locator)
-
