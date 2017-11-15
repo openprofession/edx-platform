@@ -45,6 +45,7 @@ from openedx.core.djangolib.js_utils import (
     <%static:css group='style-vendor-tinymce-skin'/>
 
     <%static:css group='${self.attr.main_css}'/>
+    <link href="https://unpkg.com/le-player@0.4.1/dist/css/default/le-player.css" rel="stylesheet" type="text/css">
 
     <%include file="widgets/segment-io.html" />
 
@@ -113,6 +114,9 @@ from openedx.core.djangolib.js_utils import (
                   <%block name='requirejs'></%block>
               });
           });
+      });
+      require(['https://unpkg.com/le-player@0.4.1/dist/js/le-player.min.js'], function() {
+      	require(['https://unpkg.com/le-player@0.4.1/dist/js/le-player-youtube.min.js']);
       });
     </script>
     <%include file="widgets/segment-io-footer.html" />

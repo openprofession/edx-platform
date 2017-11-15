@@ -8,84 +8,55 @@ from openedx.core.djangolib.js_utils import js_escaped_string
     <h3 class="hd hd-2">${display_name}</h3>
 % endif
 
-<div
-    id="video_${id}"
-    class="video closed"
-    data-metadata='${metadata}'
-    data-bumper-metadata='${bumper_metadata}'
-    data-poster='${poster}'
-    tabindex="-1"
->
-    <div class="focus_grabber first"></div>
+<video id="le-player_${id}"></video>
 
-    <div class="tc-wrapper">
-      <article class="video-wrapper">
-          <span tabindex="0" class="spinner" aria-hidden="false" aria-label="${_('Loading video player')}"></span>
-          <span tabindex="-1" class="btn-play is-hidden" aria-hidden="true" aria-label="${_('Play video')}"></span>
-          <div class="video-player-pre"></div>
-          <section class="video-player">
-              <div id="${id}"></div>
-              <h4 class="hd hd-4 video-error is-hidden">${_('No playable video sources found.')}</h4>
-          </section>
-          <div class="video-player-post"></div>
-          <div class="closed-captions"></div>
-          <section class="video-controls is-hidden">
-              <div>
-                  <div class="vcr"><div class="vidtime">0:00 / 0:00</div></div>
-                  <div class="secondary-controls"></div>
-              </div>
-          </section>
-      </article>
-    </div>
 
-    <div class="focus_grabber last"></div>
-  <ul class="wrapper-downloads">
-    % if download_video_link:
-        <li class="video-sources video-download-button">
-            <a href="${download_video_link}" download>${_('Download video')}</a>
-        </li>
-    % endif
-    % if track:
-        <li class="video-tracks video-download-button">
-          % if transcript_download_format:
-            <a href="${track}" download>${_('Download transcript')}</a>
-            <div class="a11y-menu-container">
-                <a class="a11y-menu-button" href="#" title="${'.' + transcript_download_format}" role="button" aria-disabled="false">${'.' + transcript_download_format}</a>
-                <ol class="a11y-menu-list" role="menu">
-                % for item in transcript_download_formats_list:
-                  % if item['value'] == transcript_download_format:
-                  <li class="a11y-menu-item active">
-                  % else:
-                  <li class="a11y-menu-item">
-                  % endif
-                  ## This is necessary so we don't scrape 'display_name' as a string.
-                  <% dname = item['display_name'] %>
-                      <a class="a11y-menu-item-link" href="#${item['value']}" title="${_(dname)}" data-value="${item['value']}" role="menuitem" aria-disabled="false">
-                        ${_(dname)}
-                      </a>
-                  </li>
-                % endfor
-                </ol>
-            </div>
-          % else:
-            <a href="${track}" class="external-track" download>${_('Download transcript')}</a>
-          % endif
-        </li>
-    % endif
-    % if handout:
-        <li class="video-handout video-download-button">
-            <a href="${handout}" target="_blank" download>${_('Download Handout')}</a>
-        </li>
-    % endif
+<%block name="jsextra">
+<script>
+(function(){
+  var metadata = '${metadata}'
+  //Decode metadata
+  metadata = JSON.parse($('<textarea/>').html(metadata).text());
 
-    % if branding_info:
-      <li id="branding" class="branding">
-        <span class="host-tag">${branding_info['logo_tag']}</span>
-        <a href="${branding_info['url']}" target="_blank" title="${branding_info['logo_tag']}"><img class="brand-logo" src="${branding_info['logo_src']}" alt="${branding_info['logo_tag']}" /></a>
-      </li>
-    % endif
-  </ul>
-</div>
+  console.log('METADATA',metadata)
+
+  function calcOptions(metadata) {
+		var isYoutube = false;
+		var ytID = null;
+		var YOUTUBE_ID_INDEX = 1;
+    if(metadata.streams.length > 0) {
+			isYoutube = true;
+			ytID = metadata.streams.split(':')[YOUTUBE_ID_INDEX];
+    }
+		if(isYoutube) {
+			return {
+				entity: 'Youtube',
+				sources: [{ id: ytID }],
+			};
+		} else {
+    	return {
+				entity: 'Html5',
+				sources: metadata.sources.map(function(item) { return { url: item, title: 'title' } }),
+			}
+		}
+  }
+
+  var player = new lePlayer($('#le-player_${id}'), Object.assign({}, calcOptions(metadata), {
+    autoplay: metadata.autoplay,
+		preset: 'youtube',
+		excludeControls: {
+			common: [ ['subtitle'] ],
+			fullscreen: [ ['subtitle'] ],
+		},
+    plugins: {
+			miniplayer: false,
+    }
+  }));
+console.log(player);
+})();
+</script>
+</%block>
+
 % if cdn_eval:
 <script>
   //TODO: refactor this js into a separate file.
