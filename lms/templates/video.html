@@ -10,7 +10,6 @@ from openedx.core.djangolib.js_utils import js_escaped_string
 
 <video id="le-player_${id}"></video>
 
-
 <%block name="jsextra">
 <script>
 (function(){
@@ -18,41 +17,39 @@ from openedx.core.djangolib.js_utils import js_escaped_string
   //Decode metadata
   metadata = JSON.parse($('<textarea/>').html(metadata).text());
 
-  console.log('METADATA',metadata)
+  var YOUTUBE_ID_INDEX = 1;
+  var isYoutube = false;
 
-  function calcOptions(metadata) {
-		var isYoutube = false;
-		var ytID = null;
-		var YOUTUBE_ID_INDEX = 1;
-    if(metadata.streams.length > 0) {
-			isYoutube = true;
-			ytID = metadata.streams.split(':')[YOUTUBE_ID_INDEX];
-    }
-		if(isYoutube) {
-			return {
-				entity: 'Youtube',
-				sources: [{ id: ytID }],
-			};
-		} else {
-    	return {
-				entity: 'Html5',
-				sources: metadata.sources.map(function(item) { return { url: item, title: 'title' } }),
-			}
-		}
+  if(metadata.streams.length > 0) {
+    isYoutube = true;
+    var ytID = metadata.streams.split(':')[YOUTUBE_ID_INDEX];
   }
 
-  var player = new lePlayer($('#le-player_${id}'), Object.assign({}, calcOptions(metadata), {
+  function calcSources(isYoutube) {
+    if(isYoutube) {
+      return [{ id: ytID }];
+    } else {
+      return metadata.sources.map(function(item) { return { url: item, title: 'title' } });
+    }
+  }
+
+  var player = new lePlayer($('#le-player_${id}'), Object.assign({}, {
+    entity: isYoutube? 'Youtube': 'Html5',
+    sources: calcSources(isYoutube),
     autoplay: metadata.autoplay,
-		preset: 'youtube',
-		excludeControls: {
-			common: [ ['subtitle'] ],
-			fullscreen: [ ['subtitle'] ],
-		},
+    controls : {
+      common : [
+        ['play', 'volume', 'timeline', 'rate', 'backward', 'source', 'divider', !isYoutube? 'download' : 'divider', 'fullscreen'],
+        []
+      ],
+      fullscreen : [
+        ['play', 'volume', 'timeline', 'rate', 'backward', 'source', 'divider', !isYoutube? 'download' : 'divider', 'fullscreen'],
+      ]
+    },
     plugins: {
-			miniplayer: false,
+      miniplayer: false,
     }
   }));
-console.log(player);
 })();
 </script>
 </%block>
