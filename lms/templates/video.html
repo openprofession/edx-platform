@@ -12,7 +12,8 @@ from openedx.core.djangolib.js_utils import js_escaped_string
 
 <%block name="jsextra">
 <script>
-(function(){
+require(['jquery'], function($) {
+setTimeout(function(){
   var metadata = '${metadata}'
   //Decode metadata
   metadata = JSON.parse($('<textarea/>').html(metadata).text());
@@ -50,7 +51,9 @@ from openedx.core.djangolib.js_utils import js_escaped_string
       miniplayer: false,
     }
   }));
-})();
+}, 40);
+
+});
 </script>
 </%block>
 
