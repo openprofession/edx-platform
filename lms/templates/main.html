@@ -96,8 +96,7 @@ from pipeline_mako import render_require_js_path_overrides
     }).call(this, require || RequireJS.require);
   </script>
   <script type="text/javascript" src="${static.url("lms/js/require-config.js")}"></script>
-  <script src="https://unpkg.com/le-player@0.4.1/dist/js/le-player.min.js"></script>
-  <script src="https://unpkg.com/le-player@0.4.1/dist/js/le-player-youtube.min.js"></script>
+  <script src="https://unpkg.com/le-player@0.4.1/dist/js/le-player.full.min.js"></script>
   <%block name="js_overrides">
     ${render_require_js_path_overrides(settings.REQUIRE_JS_PATH_OVERRIDES)}
   </%block>
