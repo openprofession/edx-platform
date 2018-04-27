@@ -72,3 +72,13 @@ EVMS_URL = ENV_TOKENS.get('EVMS_URL', None)
 EVMS_API_KEY = AUTH_TOKENS.get('EVMS_API_KEY', None)
 
 ROOT_URLCONF = 'sso_edx_npoed.cms_urls'
+FEATURES["COURSE_VALIDATOR"] = True
+if FEATURES.get("COURSE_VALIDATOR"):
+    INSTALLED_APPS += ("course_validator",)
+    #CV_PATH = REPO_ROOT.dirname() / "venvs" / "edxapp" / "src" / "edx-course-validator"/"course_validator"
+    CV_PATH = REPO_ROOT.dirname() / "venvs" / "edxapp" / "src" / "course-validator"/"course_validator"
+    MAKO_TEMPLATES['main'] += (CV_PATH/"templates",)
+    LOCALE_PATHS += (CV_PATH/"locale",)
+
+MEDIA_ROOT = "/edx/var/edxapp/media/"
+

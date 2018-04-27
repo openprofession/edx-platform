@@ -1,5 +1,5 @@
 import json
-import urllib2
+import requests
 
 from lxml.etree import Element, SubElement
 from django.conf import settings
@@ -67,6 +67,8 @@ def get_urls_for_profiles(edx_video_id, val_profiles):
                 if video.get('profile') == profile:
                     url = video.get('url', '')
         profile_data[profile] = url
+    import logging
+    logging.info(json.loads(json.dumps(profile_data)))
     return json.loads(json.dumps(profile_data))
 
 
@@ -79,12 +81,16 @@ def get_video_info(edx_video_id):
     if hasattr(settings, 'EVMS_API_KEY'):
         token = getattr(settings, 'EVMS_API_KEY')
     url_api = u'{0}/{1}?token={2}'.format(API_URL, edx_video_id, token)
+    import logging
+    logging.info(url_api)
     try:
-        response = urllib2.urlopen(url_api)
-    except:
+        response = requests.get(url_api, verify=False)
+    except Exception as e:
+        logging.info(e)
         return None
-    data = response.read()
+    data = response.text
     clean_data = json.loads(data)
+    logging.info(clean_data)
     return clean_data
 
 

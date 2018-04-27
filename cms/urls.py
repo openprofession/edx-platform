@@ -222,3 +222,11 @@ if settings.FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
         url(r'^login_oauth_token/(?P<backend>[^/]+)/$', 'student.views.login_oauth_token'),
         url(r'^social-logout', 'sso_edx_npoed.views.logout', name='social-logout'),
     )
+if settings.FEATURES.get('COURSE_VALIDATOR'):
+    urlpatterns += patterns(
+        'course_validator.views',
+        url(r'^check_course/{}/$'.format(settings.COURSE_KEY_PATTERN), 'course_validator_handler',
+        name='course_validator_handler'),
+    )
+
+

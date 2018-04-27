@@ -58,7 +58,10 @@ from pipeline_mako import render_require_js_path_overrides
 
   <script type="text/javascript" src="${static.url(jsi18n_path)}"></script>
 
-  <link rel="icon" type="image/x-icon" href="${static.url(static.get_value('favicon_path', settings.FAVICON_PATH))}" />
+  ## EDX jquery=1.7.2; we have to use it >= 1.91 and < 3
+  <link rel="stylesheet" href="/static/themes/default/css/bootstrap.min.css">
+
+  <link rel="icon" type="image/x-icon" href="https://mipt.ru/bitrix/templates/profile/img/favicon.png" />
 
   <%static:css group='style-vendor'/>
   <%static:css group='${self.attr.main_css}'/>
@@ -96,8 +99,7 @@ from pipeline_mako import render_require_js_path_overrides
     }).call(this, require || RequireJS.require);
   </script>
   <script type="text/javascript" src="${static.url("lms/js/require-config.js")}"></script>
-  <script src="https://unpkg.com/le-player@0.4.1/dist/js/le-player.min.js"></script>
-  <script src="https://unpkg.com/le-player@0.4.1/dist/js/le-player-youtube.min.js"></script>
+  <script src="https://unpkg.com/le-player@0.4.1/dist/js/le-player.full.min.js"></script>
   <%block name="js_overrides">
     ${render_require_js_path_overrides(settings.REQUIRE_JS_PATH_OVERRIDES)}
   </%block>

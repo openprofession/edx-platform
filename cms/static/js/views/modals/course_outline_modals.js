@@ -821,7 +821,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                     tabs.push({
                         name: 'advanced',
                         displayName: gettext('Advanced'),
-                        editors: [TimedExaminationPreferenceEditor]
+                        editors: [DueDateEditor, TimedExaminationPreferenceEditor]
                     });
                 }
 

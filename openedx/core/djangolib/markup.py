@@ -31,4 +31,14 @@ def HTML(html):                                 # pylint: disable=invalid-name
         )}
 
     """
+    try:
+        html_safe = markupsafe.Markup(html)
+        return html_safe
+    except:
+        pass
+    try:
+        html_safe = markupsafe.Markup(html.decode('utf-8'))
+        return html_safe
+    except:
+        pass
     return markupsafe.Markup(html)
